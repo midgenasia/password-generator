@@ -2,6 +2,8 @@
 
 define('DEFAULT_NUMBER_OF_PASSWORDS', 5);
 define('DEFAULT_NUMBER_OF_CHARACTERS', 32);
+define('MAX_PASSWORDS' , 100);
+define('MAX_CHARACTERS', 1000);
 define('SP_CHARS', ['!', '"', '#', '$', '%',
     '&', '\'', '-', '=', '^', '~', '\\', '|',
     ',', '.', '/', '<', '>', '?', '_', '@', '`',
@@ -26,6 +28,7 @@ $_TRANSLATE = yaml_parse_file(TRANSLATE_FILE);
 $_TRANSLATE = $_TRANSLATE[$lang] ?? $_TRANSLATE['en'];
 
 // 初期化
+global $chars, $chars_count;
 $chars  = [];
 $number_of_passwords    = intval($_GET['number_of_passwords']  ?? DEFAULT_NUMBER_OF_PASSWORDS);
 $number_of_characters   = intval($_GET['number_of_characters'] ?? DEFAULT_NUMBER_OF_CHARACTERS);
@@ -35,8 +38,8 @@ $use_specialchars       = isset($_GET['use_specialchars']) && $_GET['use_special
 $use_all_specialchars   = isset($_GET['use_all_specialchars']) && $_GET['use_all_specialchars'] === '1';
 
 // 制限
-if ($number_of_passwords  > 10000) $number_of_passwords  = DEFAULT_NUMBER_OF_PASSWORDS;
-if ($number_of_characters > 100)   $number_of_characters = DEFAULT_NUMBER_OF_CHARACTERS;
+if ($number_of_passwords  > MAX_PASSWORDS)  $number_of_passwords  = DEFAULT_NUMBER_OF_PASSWORDS;
+if ($number_of_characters > MAX_CHARACTERS) $number_of_characters = DEFAULT_NUMBER_OF_CHARACTERS;
 
 ?><!DOCTYPE html>
 
@@ -92,15 +95,11 @@ if ($use_specialchars) {
 $chars_count = count($chars);
 if ($chars_count >= 1) : ?>
     <ol class="passwords">
-<?php
-for ($password_loop_count = 0; $password_loop_count < $number_of_passwords; $password_loop_count++) :
-    $password   = "";
-    mt_srand();
-    for ($i = 0; $i < $number_of_characters; $i++) {
-        $password   .= $chars[mt_rand(0, $chars_count-1)];
-    }
-?>
-        <li class="pw"><input type="text" name="output_password" id="OutputPassword<?=$password_loop_count?>" value="<?=_e($password)?>" size="<?=$number_of_characters?>"> <button onclick="const pw = document.getElementById('OutputPassword<?=$password_loop_count?>'); pw.select(); pw.setSelectionRange(0, <?=$number_of_characters?>); document.execCommand('copy');"><?=_t('copy')?></button></li>
+<?php for ($password_loop_count = 0; $password_loop_count < $number_of_passwords; $password_loop_count++) : ?>
+        <li class="pw">
+            <input type="text" name="output_password" id="OutputPassword<?=$password_loop_count?>" value="<?=_e(generatePassword($number_of_characters))?>" size="<?=$number_of_characters?>">
+            <button onclick="const pw = document.getElementById('OutputPassword<?=$password_loop_count?>'); pw.select(); pw.setSelectionRange(0, <?=$number_of_characters?>); document.execCommand('copy');"><?=_t('copy')?></button>
+        </li>
 <?php endfor; ?>
     </ol>
 <?php else : ?>
@@ -226,6 +225,15 @@ for ($password_loop_count = 0; $password_loop_count < $number_of_passwords; $pas
     </script>
 </body>
 </html><?php
+function generatePassword(int $number_of_characters) : string {
+    global $chars, $chars_count;
+    $password   = '';
+    mt_srand();
+    for ($i = 0; $i < $number_of_characters; $i++) {
+        $password   .= $chars[mt_rand(0, $chars_count-1)];
+    }
+    return $password;
+}
 function getSpecialChars(array $filteredIndexes = []) : array {
     return array_filter(SP_CHARS, function($i) use ($filteredIndexes) {
         return in_array($i, $filteredIndexes, true);
