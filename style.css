@@ -1,0 +1,53 @@
+@charset 'utf-8';
+
+* {
+    box-sizing: border-box;
+}
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+}
+body {
+    line-height: 175%;
+}
+h1 {
+    margin-left: 1rem;
+}
+ul {
+    list-style: none outside;
+}
+ol.passwords {
+    list-style: decimal outside;
+    display: inline-block;
+    padding: 1rem 1rem 1rem 2rem;
+    margin-left: 2rem;
+    margin-bottom: 0.75rem;
+}
+.char-list li:first-of-type {
+    display: block;
+}
+.char-list li {
+    display: inline-block;
+    margin-right: 1rem;
+    min-width: 3rem;
+}
+.content {
+    padding: 1rem 1rem;
+}
+.notice {
+    display: inline-block;
+    outline: #F00 solid 1px;
+    padding: 0.25rem 1rem;
+    margin-left: 1rem;
+    color: #F00;
+}
+.number_of_characters,
+.number_of_passwords {
+    width: 4rem;
+}
+.option {
+    display: inline-block;
+    outline: #333 solid 1px;
+    padding: 1rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.75rem;
+}
